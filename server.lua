@@ -1,3 +1,4 @@
+local vRP = nil
 local ESX = nil
 local QBCore = nil 
 local FrameworkFound = nil
@@ -9,6 +10,10 @@ LoadFramework = function()
     elseif Config.Framework == 'qbcore' then 
         QBCore = exports["qb-core"]:GetCoreObject()
         FrameworkFound = 'qbcore'
+    elseif Config.Framework == 'creative_network' then
+        local Proxy = module("vrp","lib/Proxy")
+        vRP = Proxy.getInterface("vRP")
+        FrameworkFound = 'vrp'
     elseif Config.Framework == 'autodetect' then
         if GetResourceState('es_extended') == 'started' then 
             ESX = exports['es_extended']:getSharedObject()
@@ -16,6 +21,10 @@ LoadFramework = function()
         elseif GetResourceState('qb-core') == 'started' then
             QBCore = exports["qb-core"]:GetCoreObject()
             FrameworkFound = 'qbcore'
+        elseif GetResourceState('vrp') == 'started' then
+            local Proxy = module("vrp","lib/Proxy")
+            vRP = Proxy.getInterface("vRP")
+            FrameworkFound = 'vrp'
         else
             FrameworkFound = 'standalone'
         end
@@ -43,6 +52,13 @@ Authorized = function(source)
     elseif FrameworkFound == 'qbcore' then
         for k, v in pairs(Config.AuthorizedGroups.group) do 
             if QBCore.Functions.HasPermission(source, v) then 
+                return true
+            end
+        end
+    elseif FrameworkFound == 'vrp' then
+        local Passport = vRP.Passport(source)
+        for k, v in pairs(Config.AuthorizedGroups.group) do 
+            if vRP.HasGroup(Passport, v) then 
                 return true
             end
         end

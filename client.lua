@@ -1,33 +1,7 @@
-local ESX = nil
-local QBCore = nil 
-local FrameworkFound = nil
 local nuiOpen = false
 local modelCreated = {}
 
-LoadFramework = function()
-    if Config.Framework == 'esx' then 
-        ESX = exports['es_extended']:getSharedObject()
-        FrameworkFound = 'esx'
-    elseif Config.Framework == 'qbcore' then 
-        QBCore = exports["qb-core"]:GetCoreObject()
-        FrameworkFound = 'qbcore'
-    elseif Config.Framework == 'autodetect' then
-        if GetResourceState('es_extended') == 'started' then 
-            ESX = exports['es_extended']:getSharedObject()
-            FrameworkFound = 'esx'
-        elseif GetResourceState('qb-core') == 'started' then
-            QBCore = exports["qb-core"]:GetCoreObject()
-            FrameworkFound = 'qbcore'
-        else
-            FrameworkFound = 'standalone'
-        end
-    elseif Config.Framework == 'standalone' then
-        FrameworkFound = 'standalone'
-    end
-end
-
 Citizen.CreateThread(function()
-    LoadFramework()
     TriggerServerEvent('ricky-vinewood:loadText')
 end)
 
